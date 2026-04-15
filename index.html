@@ -9,12 +9,12 @@
         .screen { display:none; height:100vh; justify-content:center; align-items:center; flex-direction:column; padding: 20px; }
         .active { display:flex; }
         
-        /* Photos */
+        /* Image Gallery */
         .main-pic { width:180px; border-radius:15px; margin-bottom:15px; border: 2px solid #ff4d6d; }
         .gallery { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 15px 0; }
         .gallery img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid #fff; }
 
-        /* Passcode */
+        /* Passcode Inputs */
         .input-box { display:flex; gap:10px; margin:15px; }
         .input-box input { width:45px; height:45px; font-size:1.5em; text-align:center; border-radius:10px; border:none; }
         
@@ -24,16 +24,14 @@
         button { padding:12px 20px; border:none; border-radius:20px; background:#ff4d6d; color:white; font-weight:bold; cursor:pointer; }
         .candle { font-size:50px; cursor:pointer; margin: 10px; }
 
-        /* Animations */
+        /* Hearts and Confetti */
         .heart { position:fixed; font-size:20px; z-index:9999; animation: float 3s linear forwards; }
         @keyframes float { 0% { transform: translateY(0); opacity:1; } 100% { transform: translateY(-300px); opacity:0; } }
         .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 9999; animation: fall linear forwards; }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body>
-
-<audio id="music" loop>
+<body onclick="forceMusic()"> <audio id="music" loop preload="auto">
     <source src="bday.mp3" type="audio/mpeg">
 </audio>
 
@@ -47,15 +45,15 @@
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,3)">
     </div>
     <p>Hint: your birthdate 🎂</p>
-    <button onclick="startMusic()" id="musicBtn" style="font-size: 0.8em; opacity: 0.7;">Tap to enable sound 🔊</button>
+    <p style="font-size: 0.7em; opacity: 0.5;">(Tap anywhere if you don't hear music)</p>
 </div>
 
 <div class="screen" id="success">
     <h1>🎉 HAPPY BIRTHDAY 💖</h1>
     <div class="gallery">
-        <img src="pic2.jpeg">
-        <img src="pic3.jpeg">
-        <img src="pic4.jpeg">
+        <img src="pic2.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic2'">
+        <img src="pic3.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic3'">
+        <img src="pic4.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic4'">
     </div>
     <p>You unlocked my heart 🥹</p>
     <button onclick="nextScreen()">Next 👉</button>
@@ -73,9 +71,10 @@
 
 <div class="screen" id="final">
     <h1>💌 For You</h1>
-    <p style="padding:0 20px;">
+    <p style="padding:0 20px; line-height: 1.6;">
         You are not just my sister… you are my home 🥹💖<br><br>
-        I am so lucky to have you in my life ❤️
+        I am so lucky to have you in my life ❤️<br><br>
+        Happy Birthday!
     </p>
 </div>
 
@@ -83,15 +82,19 @@
 let screens = ["lock","success","candle","final"];
 let current = 0;
 let music = document.getElementById("music");
+let musicStarted = false;
 
-function startMusic() {
-    music.play();
-    document.getElementById('musicBtn').style.display = 'none';
+// Function to force music to play
+function forceMusic() {
+    if (!musicStarted) {
+        music.play().then(() => {
+            musicStarted = true;
+        }).catch(e => console.log("Still waiting for interaction..."));
+    }
 }
 
 function move(el, index) {
-    // Try to play music when they start typing
-    music.play().catch(() => {});
+    forceMusic(); // Try playing music on every keystroke
     if(el.value.length >= 1 && index < 3) {
         document.querySelectorAll("input")[index+1].focus();
     }
@@ -105,7 +108,7 @@ function checkCode() {
 
     if(code.length === 4) {
         if(code === "1604") {
-            music.play();
+            forceMusic();
             unlockEffects();
             setTimeout(() => showScreen("success"), 1000);
         } else {
@@ -115,16 +118,17 @@ function checkCode() {
 }
 
 function unlockEffects() {
-    for(let i=0;i<50;i++) {
+    // Generate Hearts
+    for(let i=0;i<40;i++) {
         setTimeout(() => {
             let h = document.createElement("div");
             h.classList.add("heart");
             h.innerHTML = "💖";
             h.style.left = Math.random() * 100 + "vw";
-            h.style.top = "70%";
+            h.style.top = "80%";
             document.body.appendChild(h);
             setTimeout(() => h.remove(), 3000);
-        }, i * 50);
+        }, i * 100);
     }
 }
 
@@ -142,9 +146,9 @@ function showScreen(id) {
 }
 
 function nextScreen() {
-    music.play();
+    forceMusic();
     current++;
-    showScreen(screens[current]);
+    if(current < screens.length) showScreen(screens[current]);
 }
 
 function blow(c) { c.innerHTML = "💨"; }
