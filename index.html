@@ -12,15 +12,15 @@
         /* Photo Styling */
         .main-pic { width:180px; border-radius:15px; margin-bottom:15px; border: 3px solid #ff4d6d; }
         
-        /* 📸 Improved Polaroid Gallery Layout */
-        .gallery-container { display: flex; gap: 15px; overflow-x: auto; padding: 20px; width: 90vw; justify-content: center; }
+        /* 📸 Polaroid Gallery Layout */
+        .gallery-container { display: flex; gap: 15px; overflow-x: auto; padding: 20px; width: 95vw; justify-content: center; flex-wrap: wrap; }
         .polaroid { 
-            background: white; padding: 10px 10px 25px 10px; 
+            background: white; padding: 8px 8px 20px 8px; 
             transform: rotate(-3deg); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             transition: 0.3s;
         }
         .polaroid:nth-child(even) { transform: rotate(3deg); }
-        .polaroid img { width: 120px; height: 120px; object-fit: cover; }
+        .polaroid img { width: 110px; height: 110px; object-fit: cover; display: block; }
 
         /* Passcode */
         .input-box { display:flex; gap:10px; margin:15px; }
@@ -35,7 +35,10 @@
         
         /* Animations */
         .heart { position:fixed; font-size:20px; z-index:9999; animation: float 3s linear forwards; }
+        .confetti { position: fixed; width: 10px; height: 10px; z-index: 9998; animation: fall linear forwards; }
+        
         @keyframes float { 0% { transform: translateY(0); opacity:1; } 100% { transform: translateY(-300px); opacity:0; } }
+        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(100vh) rotate(720deg); } }
         .shake { animation: shake 0.4s; }
         @keyframes shake { 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } }
     </style>
@@ -55,7 +58,7 @@
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,2)">
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,3)">
     </div>
-    <p>Hint: your birthdate 🎂</p>
+    <p>Hint: your birthdate (1604) 🎂</p>
 </div>
 
 <div class="screen" id="success">
@@ -129,6 +132,7 @@ function checkCode() {
         if(code === "1604") {
             music.play();
             spawnHearts();
+            spawnConfetti(); // Trigger Confetti on Unlock
             setTimeout(() => showScreen("success"), 1000);
         } else {
             wrongCode();
@@ -144,6 +148,7 @@ function cutCake() {
         document.getElementById('knife').style.display = "none";
         document.getElementById('cakeNext').style.display = "inline-block";
         spawnHearts();
+        spawnConfetti(); // Trigger Confetti on Cake Cut
     }, 500);
 }
 
@@ -156,6 +161,20 @@ function spawnHearts() {
         h.style.top = "80%";
         document.body.appendChild(h);
         setTimeout(() => h.remove(), 3000);
+    }
+}
+
+function spawnConfetti() {
+    for(let i=0; i<100; i++) {
+        let c = document.createElement("div");
+        c.classList.add("confetti");
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.top = "-10px";
+        c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        c.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        c.style.opacity = Math.random();
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
     }
 }
 
