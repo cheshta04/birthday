@@ -5,33 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For You 💖</title>
     <style>
-        body { margin:0; font-family:sans-serif; background:#000; color:white; text-align:center; overflow:hidden; }
-        .screen { display:none; height:100vh; justify-content:center; align-items:center; flex-direction:column; padding: 20px; }
+        body { margin:0; font-family: 'Arial', sans-serif; background:#000; color:white; text-align:center; overflow:hidden; }
+        .screen { display:none; height:100vh; justify-content:center; align-items:center; flex-direction:column; padding: 20px; box-sizing: border-box;}
         .active { display:flex; }
         
-        /* Image Gallery */
-        .main-pic { width:180px; border-radius:15px; margin-bottom:15px; border: 2px solid #ff4d6d; }
-        .gallery { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 15px 0; }
-        .gallery img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid #fff; }
+        /* Photo Styling */
+        .main-pic { width:180px; border-radius:15px; margin-bottom:15px; border: 3px solid #ff4d6d; }
+        
+        /* 📸 Improved Polaroid Gallery Layout */
+        .gallery-container { display: flex; gap: 15px; overflow-x: auto; padding: 20px; width: 90vw; justify-content: center; }
+        .polaroid { 
+            background: white; padding: 10px 10px 25px 10px; 
+            transform: rotate(-3deg); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .polaroid:nth-child(even) { transform: rotate(3deg); }
+        .polaroid img { width: 120px; height: 120px; object-fit: cover; }
 
-        /* Passcode Inputs */
+        /* Passcode */
         .input-box { display:flex; gap:10px; margin:15px; }
         .input-box input { width:45px; height:45px; font-size:1.5em; text-align:center; border-radius:10px; border:none; }
         
-        .shake { animation: shake 0.4s; }
-        @keyframes shake { 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } }
-
-        button { padding:12px 20px; border:none; border-radius:20px; background:#ff4d6d; color:white; font-weight:bold; cursor:pointer; }
-        .candle { font-size:50px; cursor:pointer; margin: 10px; }
-
-        /* Hearts and Confetti */
+        button { padding:12px 25px; border:none; border-radius:25px; background:#ff4d6d; color:white; font-weight:bold; cursor:pointer; font-size: 1em; }
+        
+        /* Interactive Elements */
+        .candle { font-size:60px; cursor:pointer; margin: 10px; display: inline-block; }
+        .cake { font-size: 100px; cursor: pointer; position: relative; display: inline-block; }
+        .knife { font-size: 40px; position: absolute; top: -20px; right: -20px; transition: 0.5s; pointer-events: none;}
+        
+        /* Animations */
         .heart { position:fixed; font-size:20px; z-index:9999; animation: float 3s linear forwards; }
         @keyframes float { 0% { transform: translateY(0); opacity:1; } 100% { transform: translateY(-300px); opacity:0; } }
-        .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 9999; animation: fall linear forwards; }
-        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(100vh) rotate(720deg); } }
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } }
     </style>
 </head>
-<body onclick="forceMusic()"> <audio id="music" loop preload="auto">
+<body onclick="forceMusic()">
+
+<audio id="music" loop>
     <source src="bday.mp3" type="audio/mpeg">
 </audio>
 
@@ -44,29 +55,39 @@
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,2)">
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,3)">
     </div>
-    <p>Hint: your birthdate 🎂</p>
-    <p style="font-size: 0.7em; opacity: 0.5;">(Tap anywhere if you don't hear music)</p>
+    <p>Hint: your birthdate (1604) 🎂</p>
 </div>
 
 <div class="screen" id="success">
-    <h1>🎉 HAPPY BIRTHDAY 💖</h1>
-    <div class="gallery">
-        <img src="pic2.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic2'">
-        <img src="pic3.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic3'">
-        <img src="pic4.jpeg" onerror="this.src='https://via.placeholder.com/100?text=Pic4'">
+    <h1>🎉 HAPPY BIRTHDAY!</h1>
+    <div class="gallery-container">
+        <div class="polaroid"><img src="pic2.jpeg"></div>
+        <div class="polaroid"><img src="pic3.jpeg"></div>
+        <div class="polaroid"><img src="pic4.jpeg"></div>
     </div>
-    <p>You unlocked my heart 🥹</p>
+    <p>You are the best! 🥹</p>
     <button onclick="nextScreen()">Next 👉</button>
 </div>
 
 <div class="screen" id="candle">
     <h2>Make a wish… 🥹</h2>
+    <p>Blow the candles!</p>
     <div>
         <span class="candle" onclick="blow(this)">🕯️</span>
         <span class="candle" onclick="blow(this)">🕯️</span>
         <span class="candle" onclick="blow(this)">🕯️</span>
     </div>
     <button onclick="nextScreen()">Next 🎂</button>
+</div>
+
+<div class="screen" id="cakeScreen">
+    <h2>Time to cut the cake! 🎂</h2>
+    <div class="cake" id="cakeContainer" onclick="cutCake()">
+        <span id="cakeEmoji">🎂</span>
+        <span class="knife" id="knife">🔪</span>
+    </div>
+    <p id="cakeMsg">Tap the cake to cut it!</p>
+    <button id="cakeNext" style="display:none;" onclick="nextScreen()">Final Message 💌</button>
 </div>
 
 <div class="screen" id="final">
@@ -79,22 +100,20 @@
 </div>
 
 <script>
-let screens = ["lock","success","candle","final"];
+let screens = ["lock","success","candle","cakeScreen","final"];
 let current = 0;
 let music = document.getElementById("music");
 let musicStarted = false;
 
-// Function to force music to play
 function forceMusic() {
     if (!musicStarted) {
-        music.play().then(() => {
-            musicStarted = true;
-        }).catch(e => console.log("Still waiting for interaction..."));
+        music.play();
+        musicStarted = true;
     }
 }
 
 function move(el, index) {
-    forceMusic(); // Try playing music on every keystroke
+    forceMusic();
     if(el.value.length >= 1 && index < 3) {
         document.querySelectorAll("input")[index+1].focus();
     }
@@ -105,11 +124,10 @@ function checkCode() {
     let inputs = document.querySelectorAll("input");
     let code = "";
     inputs.forEach(i => code += i.value);
-
     if(code.length === 4) {
         if(code === "1604") {
-            forceMusic();
-            unlockEffects();
+            music.play();
+            spawnHearts();
             setTimeout(() => showScreen("success"), 1000);
         } else {
             wrongCode();
@@ -117,18 +135,26 @@ function checkCode() {
     }
 }
 
-function unlockEffects() {
-    // Generate Hearts
-    for(let i=0;i<40;i++) {
-        setTimeout(() => {
-            let h = document.createElement("div");
-            h.classList.add("heart");
-            h.innerHTML = "💖";
-            h.style.left = Math.random() * 100 + "vw";
-            h.style.top = "80%";
-            document.body.appendChild(h);
-            setTimeout(() => h.remove(), 3000);
-        }, i * 100);
+function cutCake() {
+    document.getElementById('knife').style.transform = "translate(-40px, 40px) rotate(-45deg)";
+    setTimeout(() => {
+        document.getElementById('cakeEmoji').innerHTML = "🍰";
+        document.getElementById('cakeMsg').innerHTML = "Yum! That looks delicious! 😋";
+        document.getElementById('knife').style.display = "none";
+        document.getElementById('cakeNext').style.display = "inline-block";
+        spawnHearts();
+    }, 500);
+}
+
+function spawnHearts() {
+    for(let i=0;i<30;i++) {
+        let h = document.createElement("div");
+        h.classList.add("heart");
+        h.innerHTML = "💖";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.top = "80%";
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 3000);
     }
 }
 
