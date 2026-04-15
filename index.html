@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💖</title>
+
+<style>
+body {
+    margin:0;
+    font-family:sans-serif;
+    background:#000;
+    color:white;
+    text-align:center;
+    overflow:hidden;
+}
+
+/* screens */
+.screen {
+    display:none;
+    height:100vh;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+.active { display:flex; }
+
+/* passcode */
+.input-box {
+    display:flex;
+    gap:10px;
+    margin:20px;
+}
+
+.input-box input {
+    width:50px;
+    height:50px;
+    font-size:2em;
+    text-align:center;
+    border-radius:10px;
+    border:none;
+}
+
+/* shake */
+.shake {
+    animation: shake 0.4s;
+}
+@keyframes shake {
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+}
+
+/* buttons */
+button {
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    margin-top:20px;
+}
+
+/* candles */
+.candle {
+    font-size:50px;
+    cursor:pointer;
+}
+
+/* image */
+img {
+    width:200px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+/* hearts */
+.heart {
+    position:fixed;
+    font-size:20px;
+    z-index:9999;
+    animation: float 3s linear forwards;
+}
+@keyframes float {
+    0% { transform: translateY(0); opacity:1; }
+    100% { transform: translateY(-300px); opacity:0; }
+}
+
+/* confetti */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    z-index: 9999;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(720deg); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 MUSIC -->
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2023/03/21/audio_5f9c8c1c6c.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 🔐 PASSCODE -->
+<div class="screen active" id="lock">
+    <img src="pic1.jpeg">
+    <h2>Enter Passcode 💖</h2>
+
+    <div class="input-box" id="inputs">
+        <input maxlength="1" oninput="move(this,0)">
+        <input maxlength="1" oninput="move(this,1)">
+        <input maxlength="1" oninput="move(this,2)">
+        <input maxlength="1" oninput="move(this,3)">
+    </div>
+
+    <p>Hint: your birthdate 🎂</p>
+</div>
+
+<!-- 🎉 SUCCESS -->
+<div class="screen" id="success">
+    <h1>🎉 HAPPY BIRTHDAY 💖</h1>
+    <p>You unlocked my heart 🥹</p>
+    <button onclick="nextScreen()">Next 👉</button>
+</div>
+
+<!-- 🕯️ CANDLE -->
+<div class="screen" id="candle">
+    <h2>Make a wish… 🥹</h2>
+    <p>Tap candles to blow them 🕯️</p>
+
+    <div>
+        <span class="candle" onclick="blow(this)">🕯️</span>
+        <span class="candle" onclick="blow(this)">🕯️</span>
+        <span class="candle" onclick="blow(this)">🕯️</span>
+    </div>
+
+    <button onclick="nextScreen()">Next 🎂</button>
+</div>
+
+<!-- 💌 FINAL -->
+<div class="screen" id="final">
+    <h1>💌 For You</h1>
+    <p>
+    You are not just my sister… you are my home 🥹💖 <br><br>
+    Thank you for always being there for me. <br><br>
+    I am so lucky to have you in my life ❤️ <br><br>
+    Happy Birthday 🎂✨
+    </p>
+</div>
+
+<script>
+let screens = ["lock","success","candle","final"];
+let current = 0;
+let music = document.getElementById("music");
+
+/* move input */
+function move(el,index){
+    if(el.value.length===1 && index<3){
+        document.querySelectorAll("input")[index+1].focus();
+    }
+    checkCode();
+}
+
+/* check code */
+function checkCode(){
+    let inputs = document.querySelectorAll("input");
+    let code = "";
+    inputs.forEach(i => code += i.value);
+
+    if(code.length === 4){
+        if(code === "1604"){
+            unlockEffects();
+            setTimeout(()=>showScreen("success"),800);
+        } else {
+            wrongCode();
+        }
+    }
+}
+
+/* correct effects */
+function unlockEffects(){
+    music.play().catch(()=>{});
+
+    /* hearts */
+    for(let i=0;i<25;i++){
+        let h=document.createElement("div");
+        h.classList.add("heart");
+        h.innerHTML="💖";
+        h.style.left=Math.random()*100+"vw";
+        h.style.top="50%";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),3000);
+    }
+
+    /* confetti */
+    for(let i=0;i<60;i++){
+        let c=document.createElement("div");
+        c.classList.add("confetti");
+
+        c.style.left=Math.random()*100+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+        c.style.animationDuration=(Math.random()*2+2)+"s";
+
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),4000);
+    }
+}
+
+/* wrong code */
+function wrongCode(){
+    let box=document.getElementById("inputs");
+    box.classList.add("shake");
+
+    setTimeout(()=>box.classList.remove("shake"),400);
+    document.querySelectorAll("input").forEach(i=>i.value="");
+}
+
+/* navigation */
+function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+function nextScreen(){
+    current++;
+    showScreen(screens[current]);
+}
+
+/* candles */
+function blow(c){
+    c.innerHTML="💨";
+}
+</script>
+
+</body>
+</html>
