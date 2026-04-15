@@ -5,45 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For You 💖</title>
     <style>
-        body {
-            margin:0; font-family:sans-serif; background:#000; color:white;
-            text-align:center; overflow:hidden;
-        }
-        .screen {
-            display:none; height:100vh; justify-content:center;
-            align-items:center; flex-direction:column; padding: 20px;
-        }
+        body { margin:0; font-family:sans-serif; background:#000; color:white; text-align:center; overflow:hidden; }
+        .screen { display:none; height:100vh; justify-content:center; align-items:center; flex-direction:column; padding: 20px; }
         .active { display:flex; }
-        .input-box { display:flex; gap:10px; margin:20px; }
-        .input-box input {
-            width:50px; height:50px; font-size:2em; text-align:center;
-            border-radius:10px; border:none;
-        }
-        .shake { animation: shake 0.4s; }
-        @keyframes shake {
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-        }
-        button {
-            padding:12px 24px; border:none; border-radius:20px;
-            margin-top:20px; cursor: pointer; background: #ff4d6d; color: white;
-            font-weight: bold; transition: 0.3s;
-        }
-        button:hover { transform: scale(1.05); }
-        .candle { font-size:50px; cursor:pointer; margin: 0 10px; }
         
-        /* 📸 Added Gallery Styling */
-        .gallery {
-            display: flex; gap: 10px; flex-wrap: wrap; 
-            justify-content: center; margin: 20px 0;
-        }
-        .gallery img {
-            width: 100px; height: 100px; object-fit: cover;
-            border-radius: 10px; border: 2px solid #fff;
-        }
-        #lock img { width: 200px; border-radius: 15px; margin-bottom: 20px; }
+        /* Photos */
+        .main-pic { width:180px; border-radius:15px; margin-bottom:15px; border: 2px solid #ff4d6d; }
+        .gallery { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 15px 0; }
+        .gallery img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid #fff; }
 
+        /* Passcode */
+        .input-box { display:flex; gap:10px; margin:15px; }
+        .input-box input { width:45px; height:45px; font-size:1.5em; text-align:center; border-radius:10px; border:none; }
+        
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } }
+
+        button { padding:12px 20px; border:none; border-radius:20px; background:#ff4d6d; color:white; font-weight:bold; cursor:pointer; }
+        .candle { font-size:50px; cursor:pointer; margin: 10px; }
+
+        /* Animations */
         .heart { position:fixed; font-size:20px; z-index:9999; animation: float 3s linear forwards; }
         @keyframes float { 0% { transform: translateY(0); opacity:1; } 100% { transform: translateY(-300px); opacity:0; } }
         .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 9999; animation: fall linear forwards; }
@@ -53,11 +34,11 @@
 <body>
 
 <audio id="music" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2023/03/21/audio_5f9c8c1c6c.mp3" type="audio/mpeg">
+    <source src="bday.mp3" type="audio/mpeg">
 </audio>
 
 <div class="screen active" id="lock">
-    <img src="pic1.jpeg" alt="Main Pic">
+    <img src="pic1.jpeg" class="main-pic">
     <h2>Enter Passcode 💖</h2>
     <div class="input-box" id="inputs">
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,0)">
@@ -66,14 +47,15 @@
         <input type="number" pattern="\d*" maxlength="1" oninput="move(this,3)">
     </div>
     <p>Hint: your birthdate 🎂</p>
+    <button onclick="startMusic()" id="musicBtn" style="font-size: 0.8em; opacity: 0.7;">Tap to enable sound 🔊</button>
 </div>
 
 <div class="screen" id="success">
     <h1>🎉 HAPPY BIRTHDAY 💖</h1>
     <div class="gallery">
-        <img src="pic2.jpeg" alt="Pic 2">
-        <img src="pic3.jpeg" alt="Pic 3">
-        <img src="pic4.jpeg" alt="Pic 4">
+        <img src="pic2.jpeg">
+        <img src="pic3.jpeg">
+        <img src="pic4.jpeg">
     </div>
     <p>You unlocked my heart 🥹</p>
     <button onclick="nextScreen()">Next 👉</button>
@@ -81,7 +63,6 @@
 
 <div class="screen" id="candle">
     <h2>Make a wish… 🥹</h2>
-    <p>Tap candles to blow them 🕯️</p>
     <div>
         <span class="candle" onclick="blow(this)">🕯️</span>
         <span class="candle" onclick="blow(this)">🕯️</span>
@@ -92,11 +73,9 @@
 
 <div class="screen" id="final">
     <h1>💌 For You</h1>
-    <p style="padding: 0 20px; line-height: 1.5;">
-        You are not just my sister… you are my home 🥹💖 <br><br>
-        Thank you for always being there for me. <br><br>
-        I am so lucky to have you in my life ❤️ <br><br>
-        Happy Birthday 🎂✨
+    <p style="padding:0 20px;">
+        You are not just my sister… you are my home 🥹💖<br><br>
+        I am so lucky to have you in my life ❤️
     </p>
 </div>
 
@@ -105,75 +84,70 @@ let screens = ["lock","success","candle","final"];
 let current = 0;
 let music = document.getElementById("music");
 
-function move(el,index){
-    // Force music to play on first interaction
-    music.play().catch(() => {}); 
-    
-    if(el.value.length >= 1 && index < 3){
+function startMusic() {
+    music.play();
+    document.getElementById('musicBtn').style.display = 'none';
+}
+
+function move(el, index) {
+    // Try to play music when they start typing
+    music.play().catch(() => {});
+    if(el.value.length >= 1 && index < 3) {
         document.querySelectorAll("input")[index+1].focus();
     }
     checkCode();
 }
 
-function checkCode(){
+function checkCode() {
     let inputs = document.querySelectorAll("input");
     let code = "";
     inputs.forEach(i => code += i.value);
 
-    if(code.length === 4){
-        if(code === "1604"){
-            music.play(); // Play music definitely here
+    if(code.length === 4) {
+        if(code === "1604") {
+            music.play();
             unlockEffects();
-            setTimeout(()=>showScreen("success"), 1000);
+            setTimeout(() => showScreen("success"), 1000);
         } else {
             wrongCode();
         }
     }
 }
 
-function unlockEffects(){
-    for(let i=0;i<40;i++){
-        let h=document.createElement("div");
-        h.classList.add("heart");
-        h.innerHTML="💖";
-        h.style.left=Math.random()*100+"vw";
-        h.style.top=(Math.random()*50+50)+"%";
-        document.body.appendChild(h);
-        setTimeout(()=>h.remove(),3000);
-    }
-    for(let i=0;i<100;i++){
-        let c=document.createElement("div");
-        c.classList.add("confetti");
-        c.style.left=Math.random()*100+"vw";
-        c.style.background=`hsl(${Math.random()*360},100%,50%)`;
-        c.style.animationDuration=(Math.random()*2+2)+"s";
-        document.body.appendChild(c);
-        setTimeout(()=>c.remove(),4000);
+function unlockEffects() {
+    for(let i=0;i<50;i++) {
+        setTimeout(() => {
+            let h = document.createElement("div");
+            h.classList.add("heart");
+            h.innerHTML = "💖";
+            h.style.left = Math.random() * 100 + "vw";
+            h.style.top = "70%";
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 3000);
+        }, i * 50);
     }
 }
 
-function wrongCode(){
-    let box=document.getElementById("inputs");
+function wrongCode() {
+    let box = document.getElementById("inputs");
     box.classList.add("shake");
-    setTimeout(()=>box.classList.remove("shake"),400);
-    document.querySelectorAll("input").forEach(i=>i.value="");
+    setTimeout(() => box.classList.remove("shake"), 400);
+    document.querySelectorAll("input").forEach(i => i.value = "");
     document.querySelectorAll("input")[0].focus();
 }
 
-function showScreen(id){
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
-function nextScreen(){
-    music.play(); // Ensure music continues/starts
+function nextScreen() {
+    music.play();
     current++;
-    if(current < screens.length) showScreen(screens[current]);
+    showScreen(screens[current]);
 }
 
-function blow(c){
-    c.innerHTML="💨";
-}
+function blow(c) { c.innerHTML = "💨"; }
 </script>
 </body>
 </html>
